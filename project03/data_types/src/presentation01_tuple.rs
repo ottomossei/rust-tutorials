@@ -1,6 +1,6 @@
 #[allow(dead_code)]
 pub fn main01() {
-    println!("Presentation01");
+    println!("Presentation01-1");
     let tup: (i32, f64, u8) = (500, 6.4, 1);
     println!(
         "tupple 0 : {}, byte : {}",
@@ -25,7 +25,7 @@ pub fn main01() {
 
 #[allow(dead_code)]
 pub fn main02() {
-    println!("Presentation02");
+    println!("Presentation01-2");
     let tup = (500, 6.4, 1);
     println!(
         "tupple 0 : {}, byte : {}",
@@ -48,7 +48,7 @@ pub fn main02() {
 
 #[allow(dead_code)]
 pub fn main03() {
-    println!("Presentation02");
+    println!("Presentation01-3");
     // pattern 18.1
     let tup = (500, 6.4, 1);
     let (x, y, z) = tup;
