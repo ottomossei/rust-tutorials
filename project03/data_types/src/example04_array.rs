@@ -1,6 +1,6 @@
 #[allow(dead_code)]
 pub fn main01() {
-    println!("Presentation02-1");
+    println!("Example 04-01");
     let a = [1, 2, 3, 4, 5];
 
     let mut first = a[0];
@@ -14,6 +14,7 @@ pub fn main01() {
 
 #[allow(dead_code)]
 pub fn main02() {
+    println!("Example 04-02");
     let a = [1, 2, 3, 4, 5];
     let index = 10;
 
