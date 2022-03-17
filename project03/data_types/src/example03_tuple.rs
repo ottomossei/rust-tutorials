@@ -51,7 +51,7 @@ pub fn main03() {
     println!("Presentation01-3");
     // pattern 18.1
     let tup = (500, 6.4, 1);
-    let (x, y, z) = tup;
+    let (mut x, y, z) = tup;
     println!("x: {}, byte : {}", x, std::mem::size_of_val(&x));
 
     println!("y : {}, byte : {}", y, std::mem::size_of_val(&y));
@@ -59,6 +59,6 @@ pub fn main03() {
     println!("z : {}, byte : {}", z, std::mem::size_of_val(&z));
 
     // 復習
-    // x = 400;
-    // println!("x: {}, tup.0: {}", x, tup.0);
+    x = 400;
+    println!("x: {}, tup.0: {}", x, tup.0);
 }
