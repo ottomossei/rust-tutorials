@@ -62,3 +62,14 @@ pub fn main03() {
     x = 400;
     println!("x: {}, tup.0: {}", x, tup.0);
 }
+
+#[allow(dead_code)]
+pub fn main04() {
+    println!("Example 03-04");
+    // Error
+    // let tup = (500);
+    // println!("tup: {}", tup.0);
+
+    let tup = (500,);
+    println!("tup: {} \n", tup.0);
+}
