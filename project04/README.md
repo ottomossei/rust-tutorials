@@ -204,7 +204,7 @@ fn dangle() -> &String {// error「expected lifetime parameter」
 このエラーを解消するためには、ポインタではなくデータで渡す（move）
 ```rust
 fn main() {
-    let reference_to_nothing = dangle();
+    let reference_to_nothing = no_dangle();
 }
 
 fn no_dangle() -> String {
