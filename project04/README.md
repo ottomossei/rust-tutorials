@@ -35,6 +35,6 @@ fn main(){
 }// s無効、自動でdrop関数が起動(free)
 ```
 
-![This is an image](https://raw.githubusercontent.com/ottomossei/rust-tutorials/a25931ed4b7cc5daa7944174e37e898aae3f7ab0/project04/static/01.svg)
+![This is an image]()
 
-
+<img src="https://raw.githubusercontent.com/ottomossei/rust-tutorials/a25931ed4b7cc5daa7944174e37e898aae3f7ab0/project04/static/01.svg" width="600px">
