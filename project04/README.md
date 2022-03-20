@@ -37,4 +37,4 @@ fn main(){
 
 ![This is an image]()
 
-<img src="https://raw.githubusercontent.com/ottomossei/rust-tutorials/a25931ed4b7cc5daa7944174e37e898aae3f7ab0/project04/static/01.svg" width="600px">
+<img src="https://raw.githubusercontent.com/ottomossei/rust-tutorials/a25931ed4b7cc5daa7944174e37e898aae3f7ab0/project04/static/01.svg" width="400px">
