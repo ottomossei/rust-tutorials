@@ -23,7 +23,7 @@ let y = x;
 ```
 
 ## 1.4. String型
-String型は可変長なので、実行時にヒープ領域のメモリ確保
+String型は可変長なので、実行時にヒープ領域のメモリ確保  
 String型が終わると、メモリが開放される
 ```rust
 fn main(){
@@ -74,7 +74,7 @@ fn makes_copy(some_integer: i32) {
 }
 ```
 
-## 1.7. 戻り地とスコープ
+## 1.7. 戻り値とスコープ
 ```rust
 fn main() {
     let s1 = gives_ownership(); // 戻り値がs1へmoveされる
