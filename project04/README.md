@@ -147,6 +147,8 @@ fn change(some_string: &mut String) {// 可変な参照の受け入れ
     some_string.push_str(", world");
 }
 ```
+
+## 2.3 データ競合
 スコープ内では1つしか可変な参照を持てない
 ```rust
 fn main() {
@@ -175,7 +177,7 @@ let mut s = String::from("hello");
 let r2 = &mut s;
 ```
 
-## 2.3 可変と不変の参照
+## 2.4 可変と不変の参照
 ```rust
 let mut s = String::from("hello");
 let r1 = &s;
@@ -185,7 +187,7 @@ let r3 = &mut s; // error
 sは不変で借用されているため、可変では借用できない
 
 
-## 2.4 ダングリングポインタ（dangling pointer）
+## 2.5 ダングリングポインタ（dangling pointer）
 本来有効なメモリ領域がdropされ無効化されたにもかかわらず、そのメモリ領域を参照し続けているポインタをダングリングポインタと呼ぶ  
 Rustではダングリングポインタがないことを保証している  
 ⇔ コンパイラは参照がスコープを抜けるまで、データがスコープを抜けないよう確認する  
