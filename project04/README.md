@@ -106,3 +106,112 @@ fn calculate_length(s: String) -> (String, usize) {
     (s, length)
 }
 ```
+
+# 2. 参照と借用
+## 2.1 参照
+
+```rust
+fn main() {
+    let s1 = String::from("hello");
+    let len = calculate_length(&s1);// &により所有権を放棄せず、値を参照できる
+    println!("The length of '{}' is {}.", s1, len);
+}
+
+fn calculate_length(s: &String) -> usize {// sはStringへの参照(借用)
+    s.len()
+}// sはスコープ外となるが、参照しているものの所有権がないため、参照元はdropされない
+```
+
+<img src="https://raw.githubusercontent.com/ottomossei/rust-tutorials/5c05b66d551c5f077d9ca1be9a7eec061c3ecf51/project04/static/05.svg" width="400px">
+
+## 2.2 可変な参照
+```rust
+fn main() {
+    let s = String::from("hello");
+    // change(&s);
+}
+
+fn change(some_string: &String) {
+    some_string.push_str(", world");// error
+}
+```
+参照先に関して、変更することは出来ない  
+変更するためには`mut`を加える  
+```rust
+fn main() {
+    let mut s = String::from("hello");
+    change(&mut s); // mutで可変な参照を生成
+}
+
+fn change(some_string: &mut String) {// 可変な参照の受け入れ
+    some_string.push_str(", world");
+}
+```
+スコープ内では1つしか可変な参照を持てない
+```rust
+fn main() {
+    let mut s = String::from("hello");
+    let r1 = &mut s;
+    let r2 = &mut s;　// error
+    println!("{}, {}", r1, r2); 
+}
+```
+この制約がある主な理由は、データ競合を防ぐためであり、以下の現象を防ぐ
+ - 2つ以上のポインタが同じデータに同時にアクセスする。
+ - 少なくとも一つのポインタがデータに書き込みを行っている。
+ - データへのアクセスを同期する機構が使用されていない。
+
+データ競合は未定義の振る舞いを引き起こすため特定が困難であるが、上記の考えからRustはデータ競合を発生させない
+
+波括弧により、同時並行ではなく、複数の可変な参照を作成できる
+```rust
+let mut s = String::from("hello");
+
+{
+    let r1 = &mut s;
+
+} // r1がスコープを抜ける
+
+let r2 = &mut s;
+```
+
+## 2.3 可変と不変の参照
+```rust
+let mut s = String::from("hello");
+let r1 = &s;
+let r2 = &s; 
+let r3 = &mut s; // error
+```
+sは不変で借用されているため、可変では借用できない
+
+
+## 2.4 ダングリングポインタ（dangling pointer）
+本来有効なメモリ領域がdropされ無効化されたにもかかわらず、そのメモリ領域を参照し続けているポインタをダングリングポインタと呼ぶ  
+Rustではダングリングポインタがないことを保証している  
+⇔ コンパイラは参照がスコープを抜けるまで、データがスコープを抜けないよう確認する  
+```rust
+fn main() {
+    let reference_to_nothing = dangle();
+}
+
+fn dangle() -> &String {// error「expected lifetime parameter」
+    let s = String::from("hello");
+    &s // sはdanger()のスコープを抜けるとdropされるが、そのsのポインタを返す
+}// sがdrop
+```
+このエラーを解消するためには、ポインタではなくデータで渡す（move）
+```rust
+fn main() {
+    let reference_to_nothing = dangle();
+}
+
+fn no_dangle() -> String {
+    let s = String::from("hello");
+    s
+}
+```
+
+
+
+
+
