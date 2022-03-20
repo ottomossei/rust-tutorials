@@ -39,7 +39,7 @@ fn main(){
 ```
 
 image01  
-スタック上にヒープ領域のポインタ(ptr)、値の大きさ(len)、値の許容量(capacity)
+スタック上にヒープ領域のポインタ(ptr)、値の大きさ(len)、値の許容量(capacity)  
 <img src="https://raw.githubusercontent.com/ottomossei/rust-tutorials/a25931ed4b7cc5daa7944174e37e898aae3f7ab0/project04/static/01.svg" width="400px">
 
 image02  
