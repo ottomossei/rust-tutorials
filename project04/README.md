@@ -250,6 +250,7 @@ String型の一部を参照できる
     let hello_world= &s[0..len]; // == &s[..];
 ```
 <img src="https://raw.githubusercontent.com/ottomossei/rust-tutorials/107db950c012d779a7de1845ea3696d208cbe97b/project04/static/06.svg" width="400px">
+
 `let s = "Hello, world!";`は`&str`であり、その特定の位置を指すスライスを示す。  
 そのため、ポインタの位置は不変となる。
 ```rust
