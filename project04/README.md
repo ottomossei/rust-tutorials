@@ -214,11 +214,73 @@ fn no_dangle() -> String {
 ```
 
 # 3. スライス型
+## 3.1 問題
+以下のコードについて考える
+```rust
+fn main() {
+    let mut s = String::from("hello world");
+    let word = first_word(&s);
+    println!("{}", word); //5
+    s.clear(); // Stringを"""と同等、すなわち空にする
+               // wordは5を保持し続ける。既にStringが空であるため、この5は意味をなさない
+}
 
+fn first_word(s: &String) -> usize {
+    let bytes = s.as_bytes(); // String型をbyte列に変換
+                              // i：添字、item：helloのbyte（例：(h,104)(e,101)(l,108)(l,108)(o,111)）
+    for (i, &item) in bytes.iter().enumerate() {
+        if item == b' ' {
+            // b" "より、空白に相当するバイト列があれば、添字を返す
+            return i;
+        }
+    }
+    s.len()
+}
+```
+以上のように、wordとsを同期することは困難であり、その対処法として`文字列スライス`がある
 
+## 3.2 文字列スライス
+String型の一部を参照できる
+```rust
+    let s = String::from("hello world");
+    let hello = &s[0..5];
+    let world = &s[6..11];
+    let len = s.len();
+    let lo_world = &s[3..len]; // == &s[3..];
+    let hello_world= &s[0..len]; // == &s[..];
+```
+<img src="https://raw.githubusercontent.com/ottomossei/rust-tutorials/107db950c012d779a7de1845ea3696d208cbe97b/project04/static/06.svg" width="400px">
 
+let s = "Hello, world!";は&strであり、その特定の位置を指すスライスを示す。  
+そのため、ポインタの位置は不変となる。
+```rust
+fn main() {
+    let mut s = String::from(" world");
+    let word = first_word(&s);// 不変での借用
+    s.clear(); // 可変での借用、error : mutable borrow occurs here
+    println!("{}", word); //5
+}
 
+fn first_word(s: &String) -> &str {
+    // usizeから文字列スライスを意味する&str型に変更
+    let bytes = s.as_bytes();
+    for (i, &item) in bytes.iter().enumerate() {
+        if item == b' ' {
+            return &s[0..i];
+        }
+    }
+    &s[..]
+}
+```
+## 3.3 配列型のスライス
 
+```rust
+fn main() {
+    let a = [1, 2, 3, 4, 5];
+    let slice = &a[1..3]; // == &[2, 3]
+}
+```
 
-
-
+## 4. まとめ
+所有権、借用、スライスの概念は、Rustプログラムにおいて、コンパイル時にメモリ安全性を保証している。  
+Rustはデータの所有者がスコープを抜けたときに、所有者に自動的にデータを片付けさせることで、メモリ制御をするための余計なコードやデバッグの必要性をなくしている。
