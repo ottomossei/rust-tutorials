@@ -17,6 +17,7 @@ let mut user1 = User {
     active: true,
     sign_in_count: 1,
 };
+
 //　ドット記法(この際、インスタンスはmutable)
 user1.email = String::from("anotheremail@example.com");
 ```
@@ -62,7 +63,7 @@ let user3 = User {
 ```
 
 ## タプル構造体
-順番で変数が自明な場合は、タプル構造体を用いると良い
+順番で引数が自明な場合は、タプル構造体を用いると良い
 ```rust
 // タプル
 let color: (i32, i32, i32) = (64, 64, 64);
@@ -75,8 +76,7 @@ let white = Color(255, 255, 255);
 
 struct Point(i32, i32, i32);
 ```
-また関数の引数をColor型とすると、同じi32で構成されるPointであっても  
-型が異なるため、うまく動作しない。
+また関数の引数をColor型とすると、同じi32で構成されるPointであっても  型が異なるため、うまく動作しない。
 
 ## ユニット構造体
 フィールドがない構造体で、主にポインタを引数に取る。詳細はChapter10で述べる
