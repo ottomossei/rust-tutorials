@@ -163,3 +163,93 @@ fn area(rectagle: &Rectangle) -> u32 {
 }
 ```
 
+# メソッド記法
+## 基本
+area()関数はRectangleと親密に結びついており、他の型ではうまく動作しない。  
+そのため、area()関数をareaメソッドに変形する。
+構造体にメソッドを追加するには、``impl``を利用する
+```rust
+#[derive(Debug)]
+struct Rectangle {
+    width: u32,
+    height: u32,
+}
+
+impl Rectangle {
+    // selfの所有権を借用, selfを改変する場合は&mut selfを利用する
+    fn area(&self) -> u32 {
+        self.width * self.height
+    }
+}
+
+fn main() {
+    let rect1 = Rectangle {
+        width: 30,
+        height: 50,
+    };
+    println!("{} pixcels", rect1.area());
+    println!("rect1 is {:?}", rect1);
+}
+```
+## 別のオブジェクトを引数にとるメソッド
+```rust
+#[derive(Debug)]
+struct Rectangle {
+    width: u32,
+    height: u32,
+}
+
+impl Rectangle {
+    fn area(&self) -> u32 {
+        self.width * self.height
+    }
+    fn can_hold(&self, other: &Rectangle) -> bool { // 借用
+        self.width > other.width && self.height > other.height
+    }
+}
+
+fn main() {
+    let rect1 = Rectangle {
+        width: 30,
+        height: 50,
+    };
+    let rect2 = Rectangle {
+        width: 10,
+        height: 40,
+    };
+    let rect3 = Rectangle {
+        width: 60,
+        height: 45,
+    };
+    println!("Can rect1 hold rect2? {}", rect1.can_hold(&rect2));
+    println!("Can rect1 hold rect3? {}", rect1.can_hold(&rect3));
+}
+```
+
+## 関連関数
+implブロックにselfを含まない関数（メソッドではない）を``関連関数``と呼ぶ  
+呼び出しには``::記法``を利用し、構造体によって名前空間が分離されている。
+```rust
+#[derive(Debug)]
+struct Rectangle {
+    width: u32,
+    height: u32,
+}
+
+impl Rectangle {
+    fn square(size: u32) -> Rectangle {
+        Rectangle {
+            width: size,
+            height: size,
+        }
+    }
+}
+
+fn main() {
+    let sq = Rectangle::square(3); // ::記法
+    println!("square is {:?}", sq);
+}
+```
+
+# まとめ
+構造体により、意味のある命名・領域を確保する。またメソッドにより、インスタンスの動作を指定でき、関連関数により構造体特有の機能を名前空間分けすることができる。
