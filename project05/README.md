@@ -81,6 +81,10 @@ struct Point(i32, i32, i32);
 ## ユニット構造体
 フィールドがない構造体で、主にポインタを引数に取る。詳細はChapter10で述べる
 
+```rust
+struct AlwaysEqual;
+let subject = AlwaysEqual;
+```
 
 
 
