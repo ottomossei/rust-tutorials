@@ -139,7 +139,8 @@ fn area(rectagle: &Rectangle) -> u32 { //借用
 ## デバッグ方法
 println!()のマクロに対して、Displayの実装を追加する。  
 （intなどには標準でDisplayが実装されている）  
-そのため、構造体のデバッグには``println!({:?})``を指定子として使用し、構造体定義の直前で``derive(Debug)``の注釈を追加する
+そのため、構造体のデバッグには``println!({:?})``を指定子として使用し、構造体定義の直前で``derive(Debug)``の注釈を追加する。  
+これによりprintln!()デバッグが可能となる。
 ```rust
 #[derive(Debug)]
 struct Rectangle {
