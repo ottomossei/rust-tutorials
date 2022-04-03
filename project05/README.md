@@ -1,4 +1,4 @@
-# 構造体
+# 構造体の基本
 ## 定義とインスタンス化
 構造体はタプル同様、一部を異なる型に出来る
 ```rust
@@ -86,7 +86,79 @@ struct AlwaysEqual;
 let subject = AlwaysEqual;
 ```
 
+# リファクタリング
+## タプルによるリファクタリング
+以下の長方形の面積を求めるプログラムを考える
+```rust
+fn main() {
+    let width1 = 30;
+    let height1 = 50;
+    println!("{} pixcels", area(width1, height1));
+}
 
+fn area(width: u32, height: u32) -> u32 {
+    width * height
+}
+```
+上記の問題点として、関連する２つの引数（縦×横）がプログラム内で表現できていない
 
+```rust
+fn main() {
+    let rect1 = (30, 50);
+    println!("{} pixcels", area(rect1));
+}
 
+fn area(dimensions: (u32, u32)) -> u32 {
+    dimensions.0 * dimensions.1
+}
+```
+タプルによるリファクタリングで、引数が構造的になった。  
+一方で、area()内の計算がタプルによる添字のアクセスとなったため、可読性が低下している
+
+## 構造体によるリファクタリング
+構造体を使用することで、添字を利用せず説明可能な構造・命名が可能となる
+```rust
+struct Rectangle {
+    width: u32,
+    height: u32,
+}
+
+fn main() {
+    let rect1 = Rectangle {
+        width: 30,
+        height: 50,
+    };
+    println!("{} pixcels", area(&rect1)); // 参照
+}
+
+fn area(rectagle: &Rectangle) -> u32 { //借用
+    rectagle.width * rectagle.height
+}
+```
+
+## デバッグ方法
+println!()のマクロに対して、Displayの実装を追加する。  
+（intなどには標準でDisplayが実装されている）  
+そのため、構造体のデバッグには``println!({:?})``を指定子として使用し、構造体定義の直前で``derive(Debug)``の注釈を追加する
+```rust
+#[derive(Debug)]
+struct Rectangle {
+    width: u32,
+    height: u32,
+}
+
+fn main() {
+    let rect1 = Rectangle {
+        width: 30,
+        height: 50,
+    };
+    println!("{} pixcels", area(&rect1));
+    // debug
+    println!("rect1 is {:?}", rect1);
+}
+
+fn area(rectagle: &Rectangle) -> u32 {
+    rectagle.width * rectagle.height
+}
+```
 
