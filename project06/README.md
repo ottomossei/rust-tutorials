@@ -220,7 +220,7 @@ fn plus_one(x: Option<i32>) -> Option<i32> {
 }
 ```
 
-u8のような場合、`_`を使用することで包括をカバーできる。
+u8のような場合、`_`を使用することで`包括的`にカバーできる。
 ```rust
 let some_u8_value = 0u8;
 match some_u8_value {
@@ -232,5 +232,19 @@ match some_u8_value {
 }
 ```
 
+## if let
+matchは包括的であるため、1つのパターンのみmatchさせたい場合でも`_=>()`が必要であり冗長である。  
+その場合は`if let`を使用する。
+```rust
+let some_u8_value = Some(0u8);
+if let Some(3) = some_u8_value {
+    println!("three");
+else
+    println!("Others")
+}
+```
 
 
+## まとめ
+enumは列挙された値のどれかになりうる独自の型を生成する。  
+`Option\<T>`によるエラー回避、enumの値にデータを含む場合は`match`や`if let`が使用できる。
