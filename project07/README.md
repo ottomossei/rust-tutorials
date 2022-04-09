@@ -182,3 +182,97 @@ pub fn eat_at_restaurant() {
 }
 ```
 
+## 1.9. useによるパスの簡略化
+上記の例のように`front_of_house::hosting::add_to_waitlist();`と記載すると冗長である。  
+そのため、`use`よりパスの簡略化をすることで、可読性が向上する。  
+またuseを使用する関数のパスまで指定するのは慣例的でない。フルパスで指定してしまうと、`ローカル関数と混乱するため、逆に可読性が低下する。`  
+またuseを使用すると、`元が公開状態でも再度非公開状態`となる。  
+再公開により、ある構造でコードを書きつつ別の構造で公開することが可能となり、ライブラリ利用者が利用しやすい構造で公開をコントロールできる。
+
+```rust
+mod front_of_house {
+    pub mod hosting {
+        pub fn add_to_waitlist() {}
+    }
+}
+
+// 絶対パスのuse
+use crate::front_of_house::hosting;
+// 相対パスのuse
+use self::front_of_house::hosting;
+// 相対パスのuse（再公開 (re-exporting)）
+pub use self::front_of_house::hosting;
+// 使用する関数をuseで指定するのは慣例的でない
+// use crate::front_of_house::hosting::add_to_waitlist;
+
+pub fn eat_at_restaurant() {
+    hosting::add_to_waitlist();
+    hosting::add_to_waitlist();
+    hosting::add_to_waitlist();
+}
+```
+
+一方で、構造体やenumはフルパスで書くのが慣例である。  
+※ 特に理由はない
+
+```rust
+// 標準ライブラリのHashMap構造体をバイナリクレートのスコープに持ち込む
+use std::collections::HashMap;
+
+fn main() {
+    let mut map = HashMap::new();
+    map.insert(1, 2);
+}
+```
+また同名で異なる親モジュールを使用する場合は、例外的にフルパスを使用しない。  
+名前空間の衝突が生じるためである.。
+```rust
+// Resultという同じ名前を使用するため、フルパスを使用しない
+use std::fmt;
+use std::io;
+
+fn function1() -> fmt::Result {}
+fn function2() -> io::Result<()> {}
+```
+
+## 1.10. asによるエイリアス指定
+上記の名前空間の衝突は、`as`によるエイリアス設定により回避できる
+```rust
+use std::fmt::Result;
+use std::io::Result as IoResult;
+
+fn function1() -> Result {}
+fn function2() -> IoResult<()> {}
+```
+
+## 1.11. 外部パッケージの使用
+Rustコミュニティに所属する人々が[crates.io](https://crates.io/)でパッケージを公開しており、Cargo.tomlに追記すれば利用が可能となる。
+また標準ライブラリ`std`も我々のパッケージの外部にあるクレートであり、Cargo.tomlに記載は必要なく、元々Rust言語に同梱されているだけである。
+
+
+## 1.12. ネストされたuse
+同じクレート・モジュールで定義された複数の要素を利用する場合、ネストしたパスを利用できる。
+```rust
+use std::cmp::Ordering;
+use std::io;
+
+// 以下と同様
+use std::{cmp::Ordering, io};
+
+// -- //
+
+use std::io;
+use std::io::Write;
+
+// 以下と同様
+use std::io::{self, Write};
+```
+
+## 1.13. 全公開要素をスコープに持ち込む(glob)
+以下のコードにより、collectionsの全公開要素を現在のスコープに持ち込む。  
+便利だが、どの名前がスコープ内で使用されているか理解しなければ、ローカル変数と命名が衝突する恐れがある。  
+主にテストの際、テストされるあらゆるものを`tests`モジュールに持ち込むために利用される。
+```rust
+use std::collections::*;
+```
+
