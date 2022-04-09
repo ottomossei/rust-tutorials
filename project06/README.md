@@ -64,7 +64,7 @@ fn main() {
 }
 ```
 
-下記コードのように、変数の中で役割を持たすこともできる
+下記コードのように、変数の中で役割を持たすこともでき、構造体よりシンプルな定義ができる。
 ```rust
 enum Message {
     Quit,
@@ -106,8 +106,8 @@ m.call();
 ```
 
 ## 1.3. Options
-`Rustにはnullがない`代わりに、標準ライブラリにてOptionsが以下のように定義されている。
-Option<T>型は 取得できないかもしれない値を表現する列挙型だ。  
+`Rustにはnullがない`代わりに、標準ライブラリにてOptionsが以下のように定義されている。  
+Option\<T>型は 取得できないかもしれない値を表現する列挙型だ。  
 ここで、SomeではなくNoneを使用する場合、コンパイラにOption<T>の型が何になるかを教えなければならない。  
 None値だけでは、Some列挙子が保持する型をコンパイラが推論できないからである。
 ```rust
@@ -134,5 +134,103 @@ let sum = x + y;
 上記のエラーから、RustはT型の処理を行う前には、Option<T>をTに変換する必要がある。  
 その処理を制御するのが`match`である。
 
-## 1.4. 
+## 1.4. match制御フロー演算子
+`match`は非常に強力な制御フロー演算子であり、リテラル値、変数名、ワイルドカードやその他多数のもので制御することが可能である。
+```rust
+enum Coin {
+    Penny,
+    Nickel,
+    Dime,
+    Quarter,
+}
+
+fn value_in_cents(coin: Coin) -> u32 {
+    match coin {
+        // 下記に4つの分岐（4つのアーム）
+        Coin::Penny => {
+            println!("Lucky penny!");
+            1
+        },
+        Coin::Nickel => 5,
+        Coin::Dime => 10,
+        Coin::Quarter => 25,
+    }
+}
+```
+
+またenumにenumを付随させることで、より詳細なmatchもできる。
+
+```rust
+enum UsState {
+    Alabama,
+    Alaska,
+}
+
+enum Coin {
+    Penny,
+    Nickel,
+    Dime,
+    Quarter(UsState),
+}
+
+fn value_in_cents(coin: Coin) -> u32 {
+    match coin {
+        Coin::Penny => {
+            println!("Lucky penny!");
+            1
+        }
+        Coin::Nickel => 5,
+        Coin::Dime => 10,
+        Coin::Quarter(state) => {
+            println!("State quarter from {:?}!", state);
+            25
+        }
+    }
+}
+
+let pcoin = Coin::Penny;
+let qcoin = Coin::Quarter(UsState::Alabama);
+value_in_cents(pcoin); // Lucky penny!
+value_in_cents(qcoin); // State quarter from Alabama!
+```
+
+## Option\<T>とmatch
+Optionとmatchから動作を制御できる。
+```rust
+fn plus_one(x: Option<i32>) -> Option<i32> {
+    match x {
+        None => None,
+        Some(i) => Some(i + 1),
+    }
+}
+
+let five = Some(5);
+let six = plus_one(five);
+let none = plus_one(None);
+```
+
+## matchは包括的
+以下のコードは包括的でないため、エラーとなる
+```rust
+// error[E0004]: non-exhaustive patterns: `None` not covered
+fn plus_one(x: Option<i32>) -> Option<i32> {
+    match x {
+        Some(i) => Some(i + 1),
+    }
+}
+```
+
+u8のような場合、`_`を使用することで包括をカバーできる。
+```rust
+let some_u8_value = 0u8;
+match some_u8_value {
+    1 => println!("one"),
+    3 => println!("three"),
+    5 => println!("five"),
+    7 => println!("seven"),
+    _ => (),
+}
+```
+
+
 
