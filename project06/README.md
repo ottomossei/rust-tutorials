@@ -194,7 +194,7 @@ value_in_cents(pcoin); // Lucky penny!
 value_in_cents(qcoin); // State quarter from Alabama!
 ```
 
-## Option\<T>とmatch
+## 1.5. Option\<T>とmatch
 Optionとmatchから動作を制御できる。
 ```rust
 fn plus_one(x: Option<i32>) -> Option<i32> {
@@ -209,7 +209,7 @@ let six = plus_one(five);
 let none = plus_one(None);
 ```
 
-## matchは包括的
+## 1.6. matchは包括的
 以下のコードは包括的でないため、エラーとなる
 ```rust
 // error[E0004]: non-exhaustive patterns: `None` not covered
@@ -232,7 +232,7 @@ match some_u8_value {
 }
 ```
 
-## if let
+## 1.7. if let
 matchは包括的であるため、1つのパターンのみmatchさせたい場合でも`_=>()`が必要であり冗長である。  
 その場合は`if let`を使用する。
 ```rust
@@ -245,6 +245,6 @@ else
 ```
 
 
-## まとめ
+## 1.8. まとめ
 enumは列挙された値のどれかになりうる独自の型を生成する。  
 `Option\<T>`によるエラー回避、enumの値にデータを含む場合は`match`や`if let`が使用できる。
