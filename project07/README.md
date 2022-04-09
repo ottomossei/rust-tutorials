@@ -276,3 +276,27 @@ use std::io::{self, Write};
 use std::collections::*;
 ```
 
+## モジュールを複数ファイルに分割する
+`main.rs`で利用するため、Cargo.tomlを編集する。
+```bash
+$ cargo new --lib restaurant
+```
+
+```toml
+[package]
+name = "create_modules"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+
+[lib]
+name = "restaurant"
+path = "restaurant/src/lib.rs"
+```
+
+詳細は[create_modules](https://github.com/ottomossei/rust-tutorials/tree/master/project07/create_modules/)を参考。
+
+# まとめ
+Rustでは、パッケージを複数のクレートに、そしてクレートを複数のモジュールに分割して、あるモジュールで定義された要素を他のモジュールから参照することができる。
+
