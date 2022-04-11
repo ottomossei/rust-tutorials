@@ -1,4 +1,4 @@
-# コレクション
+# 1. コレクション
 コレクションはタプル型と異なり、データがヒープ上に確保されるため、データ量がコンパイル時には不明でも良い。したがって、伸縮可能である。
  - ベクタ型
    - 可変長の値を並べて保持出来る
@@ -7,7 +7,7 @@
  - ハッシュマップ
    - 値とキーが紐づけされている。
 
-## ベクタ
+## 1.1. ベクタ
 ベクタは単体のデータ構造でありながら複数の値を保持でき、それらの値をメモリ上に隣り合わせに並べる。  
 ベクタには同じ型の値しか保持できない。  
 ```rust
@@ -64,7 +64,7 @@ for i in &mut v2 {
 }
 ```
 
-## Enum利用による複数の型の保持
+## 1.2. Enum利用による複数の型の保持
 enumを保持するベクタを作成することで、ベクタでも結果的に異なる型を保持できる。
 しかしプログラム記載時点で、プログラムが実行時に取得し、ベクタに格納し得る全ての型を網羅できない場合には、このenum使用ができない。  
 その場合、トレイトオブジェクトを使用する（project17）
@@ -82,7 +82,7 @@ let row = vec![
 ];
 ```
 
-## よくあるエラー
+## 1.3. よくあるエラー
 可変借用と不変借用は同時に存在できないため、以下のコードはエラーとなる。  
 新たな要素をベクタの終端に追加するとき、現在のベクタにメモリスペースがなければ、新しいメモリを割り当て、古い要素を新しいスペースにコピーする必要がある。  
 その場合、最初の要素を指す参照は、解放されたメモリを指すことになるため、エラーを通知する。
@@ -95,7 +95,7 @@ v.push(6); // Error : mutable borrow occurs here
 println!("The first element is: {}", first);
 ```
 
-## 文字列
+## 1.4. 文字列
 文字列の生成及び更新は以下の通りである。
 ```rust
 // 新たな空の文字列
@@ -124,7 +124,7 @@ s1.push_str(s2); // s2の所有権をpush_strは奪っていない
 println!("s2 is {}", s2); // 上記より、s2を実行できる
 ```
 
-## ＋演算子による連結
+## 1.5. ＋演算子による連結
 +演算子はaddメソッドのString値呼び出し時（`fn add(self, s: &str) -> String {`）を使用している。  
 ```rust
 let s1 = String::from("Hello, ");
@@ -140,7 +140,7 @@ println!("{}", s3)
    - コンパイラが`参照外し型強制`より、&s2を&s2[..]に型強制する。
    - addがs引数の所有権を奪わないため、この処理後もs2が有効なStringとなる。
 
-## format!マクロによる連結
+## 1.6. format!マクロによる連結
 複数の文字列を同時に連結する場合は、format!マクロが使いやすい
 ```rust
 let s1 = String::from("tic");
@@ -151,7 +151,7 @@ let s3 = String::from("toe");
 let s = format!("{}-{}-{}", s1, s2, s3); // tic-tac-toe
 ```
 
-## 文字列中の各文字にアクセスする
+## 1.7. 文字列中の各文字にアクセスする
 以下はエラーとなる。
 ```rust
 let s1 = String::from("hello");
@@ -181,4 +181,94 @@ let s = &hello[0..1];
 for c in "नमस्ते".chars() {
     println!("{}", c);
 }
+// न
+// म
+// स
+// ्
+// त
+// े
 ```
+
+## 1.8. ハッシュマップ
+`HashMap<K, V>`は、 K型のキーとV型の値の対応関係を保持する。  
+ベクタと全く同様に、ハッシュマップはデータをヒープに保持する。  
+このHashMapはキーがString型、 値はi32型であり、キーは全て同じ型でなければならず、 値も全て同じ型でなければならない。
+```rust
+use std::collections::HashMap;
+let mut scores = HashMap::new();
+
+scores.insert(String::from("Blue"), 10);
+scores.insert(String::from("Yellow"), 50);
+
+// 同様に以下でも作成可能
+let teams  = vec![String::from("Blue"), String::from("Yellow")];
+let initial_scores = vec![10, 50];
+
+// アンダースコアにより、コンパイラはベクタのデータ型に基づきハッシュマップの型を推論する
+let scores: HashMap<_, _> = teams.iter().zip(initial_scores.iter()).collect();
+```
+
+## 1.9. ハッシュマップの所有権
+Stringのような所有権のある値は、moveされハッシュマップが所有者となる。
+```rust
+use std::collections::HashMap;
+
+let field_name = String::from("Favorite color");
+let field_value = String::from("Blue");
+
+let mut map = HashMap::new();
+map.insert(field_name, field_value);
+// field_nameとfield_valueはmoveされ、ハッシュマップが所有権を持つ
+```
+
+## 1.10. ハッシュマップの値アクセスと更新
+getメソッドやforループの走査より、ハッシュマップから値を取り出すことができる。  
+また同名のキーをinsertすることで値を更新できる。  
+entryメソッドよりEntryと呼ばれるEnumを返し、キーの存在を確認できる。
+```rust
+use std::collections::HashMap;
+
+let mut scores = HashMap::new();
+
+scores.insert(String::from("Blue"), 10);
+scores.insert(String::from("Yellow"), 50);
+
+let team_name = String::from("Blue");
+// getメソッド
+let score = scores.get(&team_name);
+
+// forループによるキーとバリューの走査
+for (key, value) in &scores {
+    println!("{}: {}", key, value);
+}
+
+// 値の上書き
+scores.insert(String::from("Blue"), 25);
+
+// キーがない場合のみ挿入（既にBlueは存在するため、insertされない）
+scores.entry(String::from("Blue")).or_insert(50);
+```
+
+## 1.11. 古い値に基づいた更新
+キーの値を探し、古い値に基づいてそれを更新することもできる。
+```rust
+use std::collections::HashMap;
+
+let text = "hello world wonderful world";
+let mut map = HashMap::new();
+
+for word in text.split_whitespace() {
+    // or_insert関数は可変参照(&mut V)を返す
+    let count = map.entry(word).or_insert(0);
+    // count変数が持つ可変参照を*で参照を外す
+    *count += 1;
+}
+
+// {"world": 2, "hello": 1, "wonderful": 1}
+println!("{:?}", map);
+```
+
+## 1.12. ハッシュ関数
+標準では、HashMapはサービス拒否(DoS)アタックに対して抵抗を示す暗号学的に安全なハッシュ関数を使用している。  
+これは利用可能な最速のハッシュアルゴリズムではないが、パフォーマンスの欠落と引き換えに安全性を得ている。  
+標準のハッシュ関数は遅すぎる場合、 異なるhasherを指定することで別の関数に切り替えることができる。
