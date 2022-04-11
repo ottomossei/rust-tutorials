@@ -95,11 +95,90 @@ v.push(6); // Error : mutable borrow occurs here
 println!("The first element is: {}", first);
 ```
 
+## 文字列
+文字列の生成及び更新は以下の通りである。
+```rust
+// 新たな空の文字列
+// let mut s = String::new();
 
+// String::from関数
+let _s0 = String::from("initial contents");
+println!("{}", _s0); // initial contents
 
+// to_stringメソッドより、文字列リテラルからStringを生成
+let data = "initial contents";
+let _s1 = data.to_string();
+println!("{}", _s1); // initial contents
 
+let mut _s2 = String::from("foo");
+_s2.push_str("bar");
+_s2.pop();
+_s2.push('c');
+println!("{}", _s2); // foobac
+```
+なおpush_str()は引数の所有権の奪取を行わない。
+```rust
+let mut s1 = String::from("foo");
+let s2 = "bar";
+s1.push_str(s2); // s2の所有権をpush_strは奪っていない
+println!("s2 is {}", s2); // 上記より、s2を実行できる
+```
 
+## ＋演算子による連結
++演算子はaddメソッドのString値呼び出し時（`fn add(self, s: &str) -> String {`）を使用している。  
+```rust
+let s1 = String::from("Hello, ");
+let s2 = String::from("world!");
+let s3 = s1 + &s2; // s1はmoveされ、もう使用できないことに注意
+println!("{}", s3)
+```
+`s3 = s1 + &s2;`は両文字列をコピーするように見えるが、実際はs1の所有権を奪い、s2の中身のコピーを追記し、結果の所有権を返している。  
+ここで、上記のadd関数に関するポイントを述べる。
+ - s1が所有権を失う理由
+   - selfには&がないため、s1はadd呼び出しにmoveされ、その後の所有権が無効となる。 
+ - &s2(&String)がaddの引数(&str)で利用できる理由
+   - コンパイラが`参照外し型強制`より、&s2を&s2[..]に型強制する。
+   - addがs引数の所有権を奪わないため、この処理後もs2が有効なStringとなる。
 
+## format!マクロによる連結
+複数の文字列を同時に連結する場合は、format!マクロが使いやすい
+```rust
+let s1 = String::from("tic");
+let s2 = String::from("tac");
+let s3 = String::from("toe");
 
+// s1, s2, s3の所有権を奪わない
+let s = format!("{}-{}-{}", s1, s2, s3); // tic-tac-toe
+```
 
+## 文字列中の各文字にアクセスする
+以下はエラーとなる。
+```rust
+let s1 = String::from("hello");
+let h = s1[0]; // error
+```
+Rustの文字列は添字アクセスをサポートしていない。  
+その理由は多言語対応により、各文字列のバイト数が一定でないためである。
+```rust
+// 4バイト
+let len = String::from("Hola").len();]
+// 12バイトではなく24バイト。各Unicodeスカラー値が2バイトであるため。
+let len = String::from("Здравствуйте").len();
+```
 
+そのため、文字列スライス時も各文字列のバイトを意識する必要がある。
+```rust
+let hello = "Здравствуйте";
+let s = &hello[0..4]; // Зд
+// Error
+// thread 'main' panicked at 'byte index 1 is not a char boundary; it is inside 'З' (bytes 0..2) of `Здравствуйте`'
+// ('main'スレッドは「バイト添え字1は文字の境界ではありません; `Здравствуйте`の'З'(バイト番号0から2)の中です」でパニックしました)
+let s = &hello[0..1];
+```
+
+個々のUnicodeスカラー値に対して処理を行う場合、char型を利用すると良い
+```rust
+for c in "नमस्ते".chars() {
+    println!("{}", c);
+}
+```
