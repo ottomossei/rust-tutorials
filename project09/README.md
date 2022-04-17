@@ -197,5 +197,44 @@ panic!はプロトタイプやテストで使用することが多い。
 例えば、不正なデータを渡されたパーサや訪問制限を示唆するステータスを返すHTTPリクエストなどは、panic!よりResultを返すことで、悪い状態を委譲することが望ましい。
 逆に不正なメモリアクセスなどはRustの標準ライブラリがpanic!を呼び出す。また独自ライブラリにおいてpanic!を返す場合はAPIドキュメント内で説明すべきである。  
 
+## 検証用に独自の型を生成する
+new関数により、インスタンス生成時の制約を加えつつ、独自の型を定義できる。
+```rust
+loop {
+    let guess: i32 = match guess.trim().parse() {
+        Ok(num) => num,
+        Err(_) => continue,
+    };
+    if guess < 1 || guess > 100 {
+        println!("The secret number will be between 1 and 100.");
+        continue;
+    }
+    // std::cmp::Orderingのcmp()より、secret_numberとguessを比較する
+    match guess.cmp(&secret_number) {
+}
+
+//-- 独自の型生成 --//
+
+// 構造体定義
+pub struct Guess {
+    value: u32,
+}
+impl Guess {
+    // new関数の本体のコードが1から100の範囲であることを確かめ、範囲外の場合、panic!する。
+    pub fn new(value: u32) -> Guess {
+        if value < 1 || value > 100 {
+            panic!("Guess value must be between 1 and 100, got {}.", value);
+        }
+        Guess {
+            value
+        }
+    }
+    // ゲッター
+    pub fn value(&self) -> u32 {
+        self.value
+    }
+}
+
+```
 
 
