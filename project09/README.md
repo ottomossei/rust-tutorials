@@ -1,5 +1,5 @@
-# エラー処理
-## panic!処理
+# 1. エラー処理
+## 1.1. panic!処理
 意図的にパニック処理を実施することができる。  
 ```rust
 panic!("crash and burn");
@@ -28,7 +28,7 @@ stack backtrace:
              at /checkout/src/libstd/panicking.rs:381
    3: ...
 ```
-## Results<T, E>の中身の調べ方
+## 1.2. Results<T, E>の中身の調べ方
 Result型はOkとErrの2列挙子から定義されており、Results<T,E>である。
 ```rust
 enum Result<T, E> {
@@ -62,7 +62,7 @@ error[E0308]: mismatched types
 
 これにより、Result<T,E>はResult<std::fs::File, std::io::Error>であることがわかる。  
 
-## マッチガードによるエラー処理
+## 1.3. マッチガードによるエラー処理
 上記のpanic, Result, matchを使用したエラー処理は下記のように書ける。  
 想定されるエラーは`File::open`の`io::Error`の`ErrorKind`を調べる。  
 https://doc.rust-lang.org/stable/std/io/enum.ErrorKind.html  
@@ -102,7 +102,7 @@ fn main() {
 }
 ```
 
-## unwrapとexpect
+## 1.4. unwrapとexpect
 Result<T, E>は、色々な作業をするヘルパーメソッドが多く定義されている。  
 unwrapはResult値がOk列挙子ならOkの中身を返し、Err列挙子ならpanic!マクロを呼ぶ。  
 これによりmatchを利用したpanic処理は短縮できる。
@@ -123,7 +123,7 @@ fn main() {
 }
 ```
 
-## エラー委譲
+## 1.5. エラー委譲
 関数内でpanic!呼び出しせず、エラーを委譲することで、呼び出し元がエラーをどうするか決定させることもできる。
 ```rust
 use std::io;
@@ -150,7 +150,7 @@ fn read_username_from_file() -> Result<String, io::Error> {
 }
 ```
 
-## ?演算子
+## 1.6. ?演算子
 `?`演算子を利用することで、上記と同様のコードが以下のように書ける。
 ```rust
 use std::io;
@@ -180,12 +180,12 @@ fn read_username_from_file() -> Result<String, io::Error> {
 ```
 また?演算子はResultを返す関数でのみ使用できるため、main()の中等では利用できないので注意が必要だ。
 
-## panic!すべきか、Resultを返すべきか
+## 1.7. panic!すべきか、Resultを返すべきか
 基本的には、panicより呼び出し元に判断を返すResultを採用する。
 panic!はプロトタイプやテストで使用することが多い。  
 故にunwrapやexpectメソッドはプロトタイプ時によく利用されている。
 
-## 悪い状態
+## 1.8. 悪い状態
 悪い状態とは、何らかの前提、保証、契約、不変性が破られたことである。
  - 悪い状態がときに起こるとは予想されないとき。
  - この時点以降、この悪い状態にないことを頼りにコードが書かれているとき。
@@ -197,9 +197,10 @@ panic!はプロトタイプやテストで使用することが多い。
 例えば、不正なデータを渡されたパーサや訪問制限を示唆するステータスを返すHTTPリクエストなどは、panic!よりResultを返すことで、悪い状態を委譲することが望ましい。
 逆に不正なメモリアクセスなどはRustの標準ライブラリがpanic!を呼び出す。また独自ライブラリにおいてpanic!を返す場合はAPIドキュメント内で説明すべきである。  
 
-## 検証用に独自の型を生成する
+## 1.9. 検証用に独自の型を生成する
 new関数により、インスタンス生成時の制約を加えつつ、独自の型を定義できる。
 ```rust
+// チェックを全関数で行なうため、低パフォーマンスに影響
 loop {
     let guess: i32 = match guess.trim().parse() {
         Ok(num) => num,
@@ -229,7 +230,8 @@ impl Guess {
             value
         }
     }
-    // ゲッター
+    // ゲッター（Guess構造体のvalueフィールドが非公開なため必要）
+    // セッターはGuess::new関数を使用してGuessのインスタンスを生成するので、セッターは作成しない
     pub fn value(&self) -> u32 {
         self.value
     }
@@ -237,4 +239,6 @@ impl Guess {
 
 ```
 
-
+## 1.10. まとめ
+panic!マクロは、無効だったり不正な値で処理を継続せず、 プロセス処理を中止する。
+実際にきちんとプロダクトとして出すには基本的にはResultを使用し、 呼び出し元に成功や失敗する場合の処理の余地を残しておく。
